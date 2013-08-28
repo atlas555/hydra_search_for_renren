@@ -1,0 +1,47 @@
+# num of tasks
+num.partition=NUM_PARTITION_TP
+
+# memory capacity
+reduce.memory.mb=2048
+
+#memory buffer
+rambuffersize.mb=250
+
+# if the output.path already exists, delete it first
+#output.overwrite=true
+
+# adjust this to a small one if mapper number is huge. default is 50Mb =  52428800
+ramsize.bytes=52428800
+
+#############   path of schema for interpreter #############
+schema.file.url=SCHEMA_FILE_URL_TP
+
+############    Input and Output  ##################
+#clean data ###
+kafka.dir=HDFS_KAFKA_DIR_TP
+history.dirs=HDFS_HISTORY_DIR_TP
+cleandata.output.dir=CLEAN_DATA_OUTPUT_DIR_TP
+cleandata.num.reducer=CLEANDATA_NUM_REDUCER_TP
+
+
+#dedup ####
+dedup.input.dir=DEDUP_INPUT_DIR_TP
+dedup.output.dir=DEDUP_OUTPUT_DIR_TP
+dedup.num.reducer=DEDUP_NUM_REDUCER_TP
+
+#build index###
+index.input.dir=BUILD_INDEX_INPUT_DIR_TP
+index.output.dir=BUILD_INDEX_OUTPUT_DIR_TP
+######## Index output location ######
+index.dir=HDFS_INDEX_DIR_TP
+
+#build attribute##
+attribute.input.dir=BUILD_ATTRIBUTE_INPUT_DIR_TP
+attribute.output.dir=BUILD_ATTRIBUTE_OUTPUT_DIR_TP
+
+
+analyzer.name=ANALYZER_NAME_TP
+renren.analyzer.dic.dir=ANALYZER_DIC_DIR_TP
+renren.analyzer.dic.names=chars.dic;units.dic;words-my.dic;words.dic
+
+business=BUSINESSNAME_TP

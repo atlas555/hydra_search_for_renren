@@ -1,0 +1,13 @@
+topic=TOPIC
+log4jPath=LOG_PATH
+
+partitionCount=PARTITION_COUNT
+threadCount=THREAD_COUNT
+versionCheckPoint=VERSION_CHECKPOINT
+versionFileDir=VERSION_DIR
+
+redisName=REDIS_NAME
+redisZKServers=REDIS_ZKSERVERS
+socketPort=SOCKET_PORT
+kafkaZKServers=KAFKA_ZKSERVERS
+SchemaFile=SCHEMA_FILE

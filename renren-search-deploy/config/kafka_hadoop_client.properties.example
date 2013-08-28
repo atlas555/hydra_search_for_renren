@@ -1,0 +1,9 @@
+partitionCount=PARTITION_COUNT
+threadCount=THREAD_COUNT
+dataDir=DATA_DIR
+log4jDir=LOG_PATH
+zkServers=ZKSERVERS
+
+topic=TOPIC
+versionCheckPoint=VERSION_CHECKPOINT
+SchemaFile=SCHEMA_FILE

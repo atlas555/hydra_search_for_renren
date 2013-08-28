@@ -1,0 +1,1 @@
+Ice.Default.Locator=INSTANCENAME/Locator:tcp -h LOCATERIP -p 4093

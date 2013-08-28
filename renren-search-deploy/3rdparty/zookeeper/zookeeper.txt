@@ -1,0 +1,98 @@
+zookeeper 单机配置
+1.配置zookeeper-3.3.4/conf/zoo_sample.cfg
+      修改dataDir，指向当前系统存在一个文件夹，用于存储zookeeper维护的数据   
+
+2.启动zookeeper 服务
+
+zookeeper-3.3.4/bin/zkServer.sh start zookeeper-3.3.4/conf/zoo_sample.cfg
+
+
+
+zookeeper 伪分布式配置配置 (以zookeeper-3.4.3, 3个server 为例）
+
+原则：不同的zookeeper server 要使用不同的data, log 和启动目录
+      不同zookeeper server 要使用不同的端口号 
+
+1. 下载zookeeper http://zookeeper.apache.org/releases.html#download  解压到本地
+2. 创建目录根目录，例如：zookeeper,后续操作都在这个目录之下， 使用${BASEDIR}表示这个根目录
+3. 创建到zookeeper 源码的链接
+   ln -s zookeeper-3.4.3  zookeeper
+   ps:将来更换zookeeper版本时，之需要重新链接即可
+4. 将zookeeper bin添加到PATH中 
+  export PATH=$PATH:${BASEDIR}/zookeeper/bin
+  
+5. 在根目录下创建 config, data, server,log目录
+   在config,data,server,log 下面分别常见目录 1,2,3
+此时目录结构为：
+   zookeeper/
+            zookeeper/      软链接到zookeeper-3.4.3
+            config/
+		  /1
+		  /2
+                  /3
+            data/
+                  /1
+                  /2
+                  /3
+            server/
+                  /1
+                  /2
+                  /3
+            log/
+                 /1
+                 /2
+                 /3
+
+6. 复制zookeeper/conf/zoo_sample.cfg 到根目录
+7. 编辑zoo_sample.cfg
+   修改dataDir=${BASEDIR}/data/1
+   添加dataLogDir=${BASEDIR}/log/1 
+   修改clientPort=2181
+   添加三行
+   server.id=host:port:port
+   例如：
+     server.1=localhost:2887:3887
+     server.2=localhost:2888:3888
+     server.3=localhost:2889:3889
+
+   将zoo_sample.cfg 复制到 config/1/zoo.cfg
+   分别将1,改为2和3，同时修改clientPort, 然修改后的zoo_sample.cfg 复制到 config/2/zoo.cfg 和 config/3/zoo.cfg
+   复制zookeeper/conf/log4j.properties 和 zookeeper/conf/configuration.xsl 到config/1, config/2, config/3 目录下
+
+8. 在data/1, data/2, data/3 目录下分别创建myid 文件， 该文件分别写1,2,3 （对应的文件，写入对应的id即可）
+9. 启动zookeeper server
+   python zkServerStart.py
+
+10. 启动zookeeper client 连接server
+    ./zkClientStart.sh
+
+
+notes:
+   zookeeper 运行状态可以察看 ${BASEDIR}/server/#{num}/zookeeper.out  ${num}表示服务器的id
+
+
+最终的目录结构：
+   zookeeper/
+            zookeeper/      软链接到zookeeper-3.4.3
+            config/
+		  /1/zoo.cfg, log4j.properties, configuration.xsl
+		  /2/zoo.cfg, log4j.properties, configuration.xsl
+		  /3/zoo.cfg, log4j.properties, configuration.xsl
+            data/
+                  /1/myid
+                  /2/myid
+                  /3/myid
+            server/
+                  /1
+                  /2
+                  /3
+            log/
+                 /1
+                 /2
+                 /3
+
+zookeeper 分布式配置
+1.编辑zoo_sample.cfg 设置data dir, port, 添加 server.id=serverip:port:port
+2.将文件夹scp到集群机器上
+3.在各个机器的data dir 下面创建myid文件，myid文件中写该sever的id
+4.启动各个server

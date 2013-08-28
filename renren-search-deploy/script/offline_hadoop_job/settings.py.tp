@@ -1,0 +1,56 @@
+#coding:utf-8 
+version="1.0"
+
+#offline 的配置
+
+ZOIE_OFFSET_FILE_NAME="index.directory"
+ATTR_DATA_FILE_NAME="attr_data.0"
+ATTR_VERSION_FILE_NAME="attr_version.0"
+
+KAFKA_BACKUP_DATA_DIR="KAFKA_BACKUP_DATA_DIR_TP"
+NUM_PARTITION=NUM_PARTITION_TP
+NUM_KAFKA_SERVER=NUM_KAFKA_SERVER_TP
+#hdfs上存放kafka 路径
+HDFS_KAFKA_DIR="HDFS_KAFKA_DIR_TP"
+
+#clean_data
+CLEAN_DATA_OUTPUT_DIR="CLEAN_DATA_OUTPUT_DIR_TP"
+
+#dedup
+DEDUP_INPUT_DIR="DEDUP_INPUT_DIR_TP"
+DEDUP_OUTPUT_DIR="DEDUP_OUTPUT_DIR_TP"
+
+#build index
+BUILD_INDEX_INPUT_DIR="BUILD_INDEX_INPUT_DIR_TP"
+BUILD_INDEX_OUTPUT_DIR="BUILD_INDEX_OUTPUT_DIR_TP"
+HDFS_INDEX_DIR="HDFS_INDEX_DIR_TP"
+
+#build attribute
+BUILD_ATTRIBUTE_INPUT_DIR="BUILD_ATTRIBUTE_INPUT_DIR_TP"
+BUILD_ATTRIBUTE_OUTPUT_DIR="BUILD_ATTRIBUTE_OUTPUT_DIR_TP"
+
+HDFS_BACKUP_DIR="HDFS_BACKUP_DIR_TP"
+HDFS_HISTORY_DIR="HDFS_HISTORY_DIR_TP"
+
+#存放建完的离线索引和属性
+LOCAL_OFFLINE_DATA_DIR="LOCAL_OFFLINE_DATA_DIR_TP"
+
+#远程服务器上备份Index的根路径，拷贝新数据的时候需要先备份
+INDEX_BACKUP_DIR="INDEX_BACKUP_DIR_TP"
+
+JobSetting={
+	    "job.cleanjob":{"jarfile":"clean_delete_data_job-%s-SNAPSHOT-jar-with-dependencies.jar" % version,"class":"com.renren.hadoop.cleandata.CleanData","args":"job.property"},
+            "job.dedupjob":{"jarfile":"uid_dedup_job-%s-SNAPSHOT-jar-with-dependencies.jar" % version,"class":"com.renren.hadoop.dereplication.DeReplication","args":"job.property"},
+            "job.buildindexjob":{"jarfile":"build-index-job-%s-SNAPSHOT-jar-with-dependencies.jar" % version,"class":"com.renren.hadoop.index.BuildIndexMain","args":"job.property BuildIndex"},
+            "job.buildattributejob":{"jarfile":"build-attribute-job-%s-SNAPSHOT-jar-with-dependencies.jar" % version,"class":"com.renren.hadoop.attribute.BuildAttributeMain","args":"job.property"},
+	}
+
+
+dateformat="%y_%m_%d_%H_%M_%S"
+
+PARTITIONS="PARTITIONS_TP"
+SEARCHER_INDEX_DIR="BASE_DEPLOY_PATH_TP"+"/index"
+NODE="NODE_TP"
+
+DISPATCH_TEMP_DIR="tmp"
+SSH_USERNAME="USERNAME_TP"

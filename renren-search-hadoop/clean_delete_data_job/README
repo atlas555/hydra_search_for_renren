@@ -1,0 +1,11 @@
+作用：
+把历史数据中delete数据删除
+用法：
+ hadoop jar  target/hadoop-cleanup-1.0-SNAPSHOT-jar-with-dependencies.jar  com.renren.hadoop.cleandata.CleanData -D mapreduce.input.fileinputformat.split.minsize=2000000000 2 /user/chuanyu.ban/jin.shang/tmp/kafka/new_out/* /user/chuanyu.ban/dong.liang/share.2010.delete  /user/chuanyu.ban/dong.liang/kafka/share.2010 2000
+其中：
+-D mapreduce.input.fileinputformat.split.minsize=2000000000  设置最小分割大小为约2G
+2 输入路径个数
+/user/chuanyu.ban/jin.shang/tmp/kafka/new_out/* /user/chuanyu.ban/dong.liang/share.2010.delete  输入路径
+
+/user/chuanyu.ban/dong.liang/kafka/share.2010 输出路径
+2000 Reducer数目[可选，默认为2000]

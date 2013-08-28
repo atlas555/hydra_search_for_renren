@@ -1,0 +1,10 @@
+按照renren-search-deploy/README中的说明将系统部署完成之后，启动Searcher/Broker, 可以按照以下步骤来验证系统是否部署成功：
+编译运行search client
+1) 编译renren-search-deploy/demo/SearchClient.java文件
+javac -cp <lib_path> SearchClient.java 
+例如：javac -cp .:renren-search-deploy/config/nodeConf/lib/* SearchClient.java
+2) 运行SearchClient
+java -cp <lib_path> SearchClient <query> <business_name> <ZOOKEEPER_IP:PORT>
+例如：java -cp .:renren-search-deploy/config/nodeConf/lib/* SearchClient "的" test 127.0.0.1:2181
+如果看到类似以下的结果:"total docs: 14918 number hit: 20“，则说明有搜索结果返回，系统部署成功。
+如果没有搜索结果返回，请更换一下query试试，如果多次更换query都无结果，说明部署可能存在问题。

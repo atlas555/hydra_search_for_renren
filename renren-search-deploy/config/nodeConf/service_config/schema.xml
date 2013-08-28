@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 	
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://javasoze.github.com/sensei/schema/sensei-schema.xsd">
+        
+    	<beans>
+		<bean id="DefaultOnlineAttributeManager" class="com.renren.hydra.attribute.DefaultOnlineAttributeManager" />
+		<bean id="DefaultOfflineAttributeManager" class="com.renren.hydra.attribute.DefaultOfflineAttributeManager" />
+		<bean id="SimpleAnalyzer" class="com.chenlb.mmseg4j.analysis.SimpleAnalyzer" />
+		<bean id="KeywordAnalyzer" class="org.apache.lucene.analysis.KeywordAnalyzer" />
+		<bean id="DefaultDocumentProcessor" class="com.renren.hydra.index.DefaultDocumentProcessor" />
+		<bean id="DefaultParser" class="com.renren.hydra.search.parser.DefaultQueryConditionParser" />
+		<bean id="TextSimilarity" class="com.renren.hydra.searcher.core.search.HydraTextSimilarity" />
+		<bean id="DefaultSimilarity" class="com.renren.hydra.searcher.core.search.HydraDefaultSimilarity" />
+		<bean id="QualitySimilarity" class="com.renren.hydra.searcher.core.search.HydraQualitySimilarity" />
+		<bean id="SumCompositeSimilarity" class="com.renren.hydra.searcher.core.search.SumCompositeSimilarity" />
+		<bean id="SecurityFilter" class="com.renren.hydra.searcher.core.search.filter.SecurityFilter" />
+		<bean id="DefaultOnlineAttributeData" class="com.renren.hydra.attribute.DefaultOnlineAttributeData" />
+		<bean id="AttributeSearchFilter" class="com.renren.hydra.search.filter.AttributeSearchFilter" />
+		<bean id="DefaultJsonSchemaInterpreter" class="com.renren.hydra.index.DefaultJsonSchemaInterpreter" />
+                <bean id="AresAnalyzer" class="com.renren.hydra.util.ThreadSafeAresAnalyzer" />
+                <bean id="AresStandardAnalyzer" class="com.renren.search.analyzer.standard.AresStandardAnalyzer" />
+                <bean id="DefaultCoreServiceImpl" class="com.renren.hydra.searcher.core.search.CoreHydraServiceImpl"/>
+                <bean id="DefaultSearchPretreater" class="com.renren.hydra.search.pretreat.DefaultSearchPretreater"/>
+                <bean id="FilterBaseSocialPretreater" class="com.renren.hydra.search.pretreat.FilterBaseSocialPretreater"/>
+                <bean id="RewriteBaseSocialPretreater" class="com.renren.hydra.search.pretreat.RewriteBaseSocialPretreater"/>
+                <bean id="AresTCAnalyzer" class="com.renren.search.analyzer.tc.AresTCAnalyzer"/>
+	</beans>
+
+        <flows>	
+        	<!--index flow -->
+        	<index_flow>
+        		<module name="OnlineAttributeManager" id="DefaultOnlineAttributeManager" />
+        		<module name="OfflineAttributeManager" id="DefaultOfflineAttributeManager" />        
+				<module name="IndexAnalyzer" id="SimpleAnalyzer">                 
+				<analyzer field="title" id="KeywordAnalyzer"/>
+			</module>
+			<module name="JsonSchemaInterpreter" id="DefaultJsonSchemaInterpreter"/>
+       			<module name="DocumentProcessor" id="DefaultDocumentProcessor" />
+			<module name="OnlineAttributeData" id="DefaultOnlineAttributeData" />
+      		</index_flow>
+      
+      		<!--search flow -->
+      		<search_flow>
+         		<module name="QueryParser" id="DefaultParser" />
+         		<module name="SearchAnalyzer" id="SimpleAnalyzer">
+				<analyzer field="title" id="KeywordAnalyzer"/>
+	 		</module>
+         		<module name="HighlightAnalyzer" id="AresStandardAnalyzer" />
+         		<module name="Similarity" id="DefaultSimilarity"/>
+                        <module name="CoreService" id="DefaultCoreServiceImpl"/>
+                        <module name="SearchPretreater" id="DefaultSearchPretreater" />
+         		<!--filter chain -->
+                        <!--
+                        <module name="ConstantFilterChain" >
+              			<filter id="SecurityFilter" />
+         		</module> -->
+      		</search_flow>
+	</flows>	
+        
+	<fields>
+      		<!--field need be indexed -->
+      		<index_field uid="id">		
+        		<field name="title" analyze="no" store="yes" multivalue="true"/>	  
+        		<field name="summary" />		
+      		</index_field>
+
+      		<!--field need for scoring -->
+      		<score_field>
+			<field name="title" weight="1.0"/>
+			<field name="summary" weight="1.0" />
+      		</score_field>
+
+      		<!--field need for summary -->	
+      		<summary_field>
+			<field name="title" highlight="true"/>
+			<field name="summary" highlight="true"/>
+      		</summary_field>
+
+      		<!--attribute data-->
+      		<attribute_field>
+			<attribute name="viewcount" datasource="online" type="int" />
+			<attribute name="sharecount" datasource="online" type="int" />
+      		</attribute_field>
+                <userid_field  name="user_id" />
+	</fields>
+</schema>

@@ -1,0 +1,9 @@
+log4j.rootLogger=INFO, RootFileAppender
+
+log4j.appender.RootFileAppender=org.apache.log4j.DailyRollingFileAppender
+#log4j.appender.RootFileAppender.File=BASEDEPLOYPATH/log/service.log
+log4j.appender.RootFileAppender.File=${LOG_PATH}
+log4j.appender.RootFileAppender.ImmediateFlush=true
+log4j.appender.RootFileAppender.DatePattern='.'yyyy-MM-dd-HH
+log4j.appender.RootFileAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.RootFileAppender.layout.ConversionPattern=%d{HH:mm:ss,SSS} - %5p [%t] (%F:%L) - [%C][%M] %m%n

@@ -1,0 +1,24 @@
+# registry
+IceGrid.InstanceName=INSTANCENAME
+IceGrid.Registry.Client.Endpoints=default -h REGISTRYIP -p 4093
+IceGrid.Registry.Server.Endpoints=default -h REGISTRYIP
+IceGrid.Registry.Internal.Endpoints=default -h REGISTRYIP
+IceGrid.Registry.Data=BASEDEPLOYPATH/data/REGISTRYNAME
+IceGrid.Registry.AdminCryptPasswords=BASEDEPLOYPATH/passwd
+IceGrid.Registry.Client.ThreadPool.Size=2
+IceGrid.Registry.Client.ThreadPool.SizeMax=200
+IceGrid.Registry.Client.ThreadPool.SizeWarn=50
+IceGrid.Registry.DynamicRegistration=1
+
+# node
+Ice.Default.Locator=INSTANCENAME/Locator:tcp -h REGISTRYIP -p 4093
+IceGrid.Node.Name=NODENAME
+IceGrid.Node.Data=BASEDEPLOYPATH/data/NODENAME
+IceGrid.Node.Endpoints=default -h NODEIP
+IceGrid.Node.CollocateRegistry=0
+IceGrid.Node.ThreadPool.Size=2
+IceGrid.Node.ThreadPool.SizeMax=200
+IceGrid.Node.ThreadPool.StackSize=262144
+IceGrid.Node.WaitTime=3
+IceGrid.Node.PropertiesOverride=Ice.Default.Host=NODEIP
+

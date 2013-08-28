@@ -1,0 +1,7 @@
+serializer.class=SERIALIZER_CLASS
+zk.connect=ZKADDRESS
+producer.type=PRODUCER_TYPE
+compression.codec=COMPRESSION_TYPE
+queue.time=QUEUE_TIME
+queue.size=QUEUE_SIZE
+batch.size=BATCH_SIZE

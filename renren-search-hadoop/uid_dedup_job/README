@@ -1,0 +1,12 @@
+作用：
+去重数据中的重复数据
+用法：
+hadoop jar target/hadoop-dereplication-1.0-SNAPSHOT-jar-with-dependencies.jar com.renren.hadoop.dereplication.DeReplication  -D mapreduce.input.fileinputformat.split.minsize=2000000000 1 /user/chuanyu.ban/dong.liang/data-clean-user /user/chuanyu.ban/dong.liang/data-dereplication 200
+其中：
+-D mapreduce.input.fileinputformat.split.minsize=2000000000  设置最小分割大小为约2G
+1 输入路径个数
+/user/chuanyu.ban/dong.liang/data-clean-user  输入路径
+
+/user/chuanyu.ban/dong.liang/data-dereplication 输出路径
+200 Reducer数目[可选，默认为200]
+

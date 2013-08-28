@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file was written by IceGrid Admin -->
+<icegrid>
+    <application name="ShareSearch">
+        <server-template id="SearchService">
+	    <parameter name="Name"/>
+	    <parameter name="ServiceName"/>
+	    <parameter name="LogLevel" default="WARN" />
+	    <parameter name="JavaXms" />
+	    <parameter name="JavaXmx" />
+	    <parameter name="BusinessName" />
+	    <parameter name="Port" />
+
+	    <icebox id="${Name}" activation="on-demand" exe="java" activation-timeout="60">
+		<option>-server</option>
+		<option>-DLOG_PATH=BASEDEPLOYPATH/log/${Name}.log</option>
+                <option>-Xss128k</option>
+                <option>-XX:ThreadStackSize=128</option>
+                <option>-Xms${JavaXms}</option>
+                <option>-Xmx${JavaXmx}</option>
+                <option>-XX:+UseParNewGC</option>
+                <option>-XX:+UseConcMarkSweepGC</option>
+                <option>-XX:+CMSIncrementalMode</option>
+                <option>-XX:-CMSIncrementalPacing</option>
+                <option>-XX:CMSIncrementalDutyCycle=100</option>
+                <option>-XX:+UseCMSCompactAtFullCollection</option>
+                <option>-verbosegc</option>
+                <option>-XX:+PrintGCDetails</option>
+                <option>-XX:+PrintGCTimeStamps</option>
+		<option>IceBox.Server</option>
+
+                <property name="Ice.ThreadPool.Server.Size" value="50"/>
+                <property name="Ice.ThreadPool.Server.SizeMax" value="500"/>
+                <property name="Ice.ThreadPool.Server.StackSize" value="262144"/>
+				<property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+               	<property name="IceBox.InstanceName" value="${Name}"/>
+               	<property name="IceBox.Trace.ServiceObserver" value="1"/>
+
+               	<service name="${Name}" entry="com.renren.hydra.service.${ServiceName}">
+                    <adapter name="${Name}" endpoints="default" id="${Name}" />
+						<property name="BusinessName" value="${BusinessName}"/>
+						<property name="Config" value="BASEDEPLOYPATH/nodeConf/service_config"/>
+						<property name="Port" value="${Port}"/>
+						<property name="${Name}.ThreadPool.Size" value="20"/>
+						<property name="${Name}.ThreadPool.SizeMax" value="200"/>
+						<property name="${Name}.ThreadPool.StackSize" value="131072"/>
+               	</service>
+            </icebox>
+        </server-template>
+
+	</application>
+</icegrid>

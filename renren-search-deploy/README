@@ -1,0 +1,190 @@
+Prerequisites
+=============
+
+1. Ice
+ubuntu下可以使用两种方式安装Ice
+   1) sudo apt-get install zeroc-ice
+   2) 编译ice的源代码
+搜索引擎系统使用icegrid+icebox 管理broker 和 searcher， ice registry 提供location service, ice node 实际运行Broker/Search Service,通过使用icegrid admin 来部署和管理
+
+设置环境变量 ICE_HOME， 
+   第一种方式，设置 ICE_HOME=/usr/
+   第二种方式，设置ICE_HOME 为安装ICE的路径
+
+详细信息请参考: http://doc.zeroc.com/display/Ice/Ice+Manual
+
+2. Zookeeper
+   系统使用Zookeeper 维护当前Broker/Searcher 状态，Broker通过Zookeeper获取Searcher的 ip,port,partition 等信息，创建ICE 连接，完成检索请求
+ 
+   1）tar zxvf zookeeper-3.3.3.tar.gz .
+   2) 配置zookeeper-3.3.3/conf/zoo_sample.cfg
+      修改dataDir，指向当前系统存在一个文件夹，用于存储zookeeper维护的数据   
+   3) zookeeper-3.3.3/bin/zkServer.sh start zoo_sample.cfg
+   4) 搜索引擎使用/search2/作为根目录，应确保该目前存在，如果不存在，通过以下方式创建
+	  ./zkCli.sh -server ZKSERVER_IP：PORT
+	  create /search2 ""
+ 
+notes:
+   可以使用
+   java -cp zookeeper-3.3.3.jar org.apache.zookeeper.ZooKeeperMain -server 127.0.0.1:2181
+   连接zookeeper服务，使用命令行与zookeeper服务器进行交互
+   zookeeper 详细配置可以参看zookeeper.txt     
+
+3. Redis
+   系统使用Redis保存正文信息，将查询结果返回给前端之前，需要到Dedis里面取一些field用来展示，部分field需要高亮显示，如title、body等。
+   Redis系统部署相关的技术支持可以联系架构组严岩yan.yan@renren-inc.com
+
+4. Kafka
+   系统使用kafka接收原始数据并转发至相应的索引模块、摘要模块、备份模块
+
+   1）tar zxvf kafka.tar.gz .
+   2) 配置kafka/config/server.properties，特别需要注意如下几个配置项：
+	  log.dir    		kafka log的位置
+      num.partitions	partition个数
+	  zk.connect		zookeeper地址
+	
+   3) kafka/bin/kafka-server-start.sh ../config/server.properties 
+
+5. Hadoop
+   系统使用hadoop备份原始数据，以备将来定期全量建索引、计算离线数据等需求。
+   hadoop集群可以使用目前技术部的公用集群。hadoop相应的技术支持可以联系系统运维部张险全xianquan.zhang@renren-inc.com
+
+6. Maven
+   安装maven
+   下载settings.xml, 复制到 ~/.m2/
+   
+
+7. 各台机器配置环境要保持一致
+   Java, Ice和部署文件的路径要保持一致
+
+8. ssh 可以无密码访问 （非必须）
+   两种方式 1)使用 kerberos
+            2)ssh-keygen 生成密钥，具体可以参考hadoop 分部式的配置 
+
+9. Deploy 脚本需要运行在ice registry 机器上
+
+===============================
+
+Compiler
+========
+代码结构：
+    SearchEngine/
+                /renren-search-slice                ice服务的描述文件,编译slice 需要正确配置环境变量ICE_HOME
+                /renren-search-util                 工具模块
+                /renren-search-broker               broker服务
+                /renren-search-searcher				searcher服务
+                /renren-search-service				其他服务
+                /renren-search-hadoop               haooop job
+                /renren-search-deploy               系统部署脚本
+
+编译命令：
+    测试环境下一般使用
+    mvn install 
+    完成代码的编译，打包生成jar文件，运行test, 并将生成的jar文件安装到本地maven 库中
+    例如：
+        cd renren-search-util/trunk
+        mvn install
+
+    关于mvn 的lifecycle, 参考 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+
+编译顺序：
+    util依赖于slice, broker和searcher依赖于slice和util
+    1.编译slice
+    2.编译util
+    3.编译其他子工程
+
+
+================================
+
+Deploy
+======
+1. svn checkout http://svn.d.xiaonei.com/search/SearchEngine_branch/renren-search-deploy/ deploy
+2. 修改deploy/bin/config.sh 文件
+   主要修改的地方
+   BASE_DEPLOY_PATH 指定部署的位置
+   INSTANCE_NAME  icegrid 名称
+   USERNAME  scp copy 到远程服务器的用户名，一般为xce
+   ICE_HOME 设为安装ICE的路径
+   CLASSPATH  添加Ice.jar 到CLASSPATH中
+   ZKADDRESS zookeeper的地址和端口号
+
+   LOCATER 设置为ice registry 节点的hostname 或者ip地址
+   REGISTRY 设置为ice registry 节点的hostname 或者ip地址
+   NODE icegrid node信息,多个node之间使用空格分割,例如node＝hostname1 hostname2
+   PARTITIONS 设置node 节点负责的partition id，多个节点之间通过空格分割，每一个节点的partitions配置为 nodename:partitionID1,partitionID2,......partitionIDn
+
+   KFK_COMMON_TOPIC  kafka的topic
+   KFK_COMMON_ZKADDRESS  kafka的zookeeper地址
+   KFK_COMMON_PATITION_COUNT  分区个数
+   KFK_COMMON_THREAD_COUNT  进程个数
+
+   KFK_REDIS_NAME redis标志符
+   KFK_REDIS_VER_CHECKPOINT  version检查点(接收到多少数据后保存一次)
+   KFK_REDIS_VER_DIR  存放version文件的文件夹路径
+   KFK_REDIS_REDIS_ZKADDRESS  redis的zookeeper地址
+
+   KFK_HADOOP_VER_CHECKPOINT  version检查点(接收到多少数据后保存一次)
+   KFK_HADOOP_DATA_DIR  存放数据文件的地址
+
+3. 部署ice 节点
+   cd 到deploy/bin目录  执行auto.sh
+   该程序负责分发配置文件和可执行文件，并启动iceregistry 和icenode
+
+4. Kafka client
+   服务的jar包为renren-search-deploy/services/hydra-kafka-client-1.0-SNAPSHOT.jar
+   配置文件为renren-search-deploy/config/producer.properties
+   调用方法：com.renren.kafka.client.ProducerClient.getInstance().method...
+   服务提供了以下方法：
+   1) 初始化方法  
+      boolean init(String file)  file：配置文件名
+   2) 发送生产者数据的方法：
+      void sendProduceData(String topic,String data)  topic：话题  data：json格式的数据
+      void sendProduceDataById(String topic,long key,String data)  topic：话题  key：id  data：json格式的数据
+      void sendProduceDataByMd5(String topic,String md5,String data)  topic：话题  md5：String类型的16进制数  data：json格式的数据
+      void sendProduceListData(String topic,List<String> data)  topic：话题  data：json格式的数据构成的List
+      void sendProduceListData(String topic,long key,List<String> data)  topic：话题  data：json格式的数据构成的List
+
+5. KV storage service 
+   该服务使用Redis保存文档内容，需要使用Redis时再配置该服务
+   服务的jar包为renren-search-deploy/services/kafka-redis-online-1.0-SNAPSHOT-jar-with-dependencies.jar
+   配置文件为renren-search-deploy/config/kafka_redis_client.properties
+   启动方式
+   java -cp ./*:/data/xce/deploy/config/nodeConf/lib/* com.renren.redis.client.RedisClientOL kafka_redis_client.properties
+   注：“-cp”后引用的路径请使用绝对路径
+
+6. Hadoop backup service
+   该服务从Kafka上下载数据，备份到HDFS上（无需备份的业务不需要该服务)
+   服务的jar包为renren-search-deploy/services/kafka-hadoop-client-1.0-SNAPSHOT-jar-with-dependencies.jar
+   配置文件为renren-search-deploy/config/kafka_hadoop_client.properties
+   启动方式
+   java -cp ./*:/data/xce/deploy/config/nodeConf/lib/* com.renren.kafka.backup.KafkaToHadoop kafka_hadoop_client.properties
+   注：“-cp”后引用的路径请使用绝对路径
+
+7. 复制broker 和 searcher 的可执行程序   
+   如果编程人员修改了搜索引擎的代码，希望运行新的代码，需要覆盖deploy中原有的jar包，如果没有修改程序，则不需要这一步
+   将新编译的 
+            renren-searchengine-util-1.0-SNAPSHOT.jar
+            renren-searchengine-broker-1.0-SNAPSHOT.jar
+            renren-searchengine-searcher-1.0-SNAPSHOT.jar
+   复制到deploy/nodeConf/lib文件夹下
+
+8. 启动ice 服务
+   1)修改application.xml 配置ice服务
+   修改xml中的node节点，主要是设置node name 和 server-instance name
+   node name 设置为icegrid.cfg 中指定的node 名称， server-instance name 一般设为Searcher#num， Broker#num, #num 表示服务的id，server-instance name 要求是unique的
+   各个服务的端口不要冲突
+   2)icegridadmin --Ice.Config=admin.cfg
+    其中admin.cfg文件在renren-search-deploy/config下面
+    按照提示要求输入用户名为admin，密码为beijing
+    连接成功建立之后，使用ice 命令管理ice服务
+   3）application add application.xml  
+      向ice grid部署应用
+   4）server list 查看当前ice grid 提供的服务
+   5）server start servername
+      servername 为第4步得到的服务名
+    
+   notes:
+      如果ice admin 提示 time out , server 有可能已经启动成功，隔一段时间再尝试同样的命令，如果提示server已经启动，表示server 工作正常
+      如果ice admin 提示exception, 需要察看log解决问题
+
+至此，系统已经部署完成，如果您想验证部署是否成功，可以参照renren-search-deploy/demo/README中的说明来进行验证

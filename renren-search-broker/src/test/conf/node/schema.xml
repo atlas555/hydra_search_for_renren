@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://javasoze.github.com/sensei/schema/sensei-schema.xsd">
+
+  <!-- valid types:
+    uid - only 1 column can be of type uid
+    int - integer
+    short - short 
+    char - character
+    long - long 
+    float - float
+    double - double
+    string - string (default)
+    date - date, format string must be provided
+    text - searchable
+
+    - valid src-data-store:
+    none - do not store
+    lucene - use store in lucene's index
+  -->
+  <!--
+    type!=text  index=not_analyzed_no_norms store=no && omit_termFreq&&postions
+  -->
+  <table uid="id" delete-field="delete" skip-field="" default-field="content">
+	<column name="userid" type="int" />
+	<column name="content" type="text" index="ANALYZED" store="NO" termvector="NO" />
+	<column name="dtime" type="date" format="yyyy-MM-dd" />
+	<!-- multi is default to be false, if set to true, delimiter is used to break the values,
+	     default delimiter is ","
+	 -->
+	<!-- attributes: indexed,store,termvector are only used when type is text -->
+  </table>
+</schema>

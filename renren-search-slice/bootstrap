@@ -1,0 +1,24 @@
+#!/bin/bash
+SLICE_GENDIR="target/generated"
+SLICE_CMD_JAVA="$ICE_HOME/bin/slice2java -I$ICE_HOME/slice -I../oce -I../util --output-dir $SLICE_GENDIR/java"
+SLICE_CMD_CPP="$ICE_HOME/bin/slice2cpp -I$ICE_HOME/slice -I../oce -I../util --output-dir $SLICE_GENDIR/cpp"
+#SLICE_LIST=$(find ../oce ../util -name "*.ice")
+SLICE_LIST=$(find ./slice -name "*.ice")
+
+mkdir -p $SLICE_GENDIR/{java,cpp}
+for SLI in $SLICE_LIST
+do
+  echo "Generating $SLI "
+  $SLICE_CMD_JAVA $SLI
+  if [ $? -ne 0 ]
+	then
+		exit 1
+	fi
+  $SLICE_CMD_CPP $SLI
+  if [ $? -ne 0 ]
+	then
+		exit 1
+	fi
+done
+
+exit 0

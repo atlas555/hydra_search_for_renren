@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ -f ~/.krb5.keytab ]; then
+    export PATH="/usr/kerberos/bin:$PATH"
+    export KRB5CCNAME=/tmp/krb5cc_pub_$$
+    trap kdestroy 0 1 2 3 5 15
+    kinit -k -t ~/.krb5.keytab
+fi
+

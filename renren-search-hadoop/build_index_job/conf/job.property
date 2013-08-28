@@ -1,0 +1,35 @@
+# run 40 tasks
+num.task=40
+
+# memory capacity
+reduce.memory.mb=2048
+
+#memory buffer
+rambuffersize.mb=250
+
+# if the output.path already exists, delete it first
+#output.overwrite=true
+
+# adjust this to a small one if mapper number is huge. default is 50Mb =  52428800
+ramsize.bytes=52428800
+
+#############   path of schema for interpreter #############
+
+##### TextJSON schema Sample (blog) absolute path ######
+schema.file.url=/user/chuanyu.ban/jin.shang/tmp/index/schema.xml
+
+############    Input and Output  ##################
+
+####### Text JSON data (blog) #####
+
+input.dirs=/user/renren.search/build-index/data-dereplication
+business=blog
+
+######## Output configuration ######
+output.dir=/user/renren.search/build-index/index-output
+
+######## Index output location ######
+index.path=/user/renren.search/build-index/index-data
+
+renren.analyzer.dic.dir=/user/chuanyu.ban/jin.shang/tmp/index/dic
+renren.analyzer.dic.names=chars.dic;units.dic;words-my.dic;words.dic
